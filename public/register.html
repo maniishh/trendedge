@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - TrendEdge</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+  <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+    <h2 class="text-2xl font-bold mb-4 text-center">Create Account</h2>
+
+    <input id="email" type="email" placeholder="Email" class="w-full mb-3 border p-2 rounded">
+    <input id="password" type="password" placeholder="Password" class="w-full mb-4 border p-2 rounded">
+
+    <button onclick="register()" class="bg-green-600 text-white px-4 py-2 rounded w-full">Register</button>
+
+    <p class="text-sm text-center mt-4">Already have an account? <a href="/login.html" class="text-blue-600 underline">Login here</a></p>
+  </div>
+
+  <script>
+    async function register() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      if (!email || !password) {
+        alert('Please enter both email and password');
+        return;
+      }
+
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+    if (res.ok) {
+  const data = await res.json();
+  console.log('✅ Registration succeeded, token:', data.token); // ✅ Add this
+  localStorage.setItem('token', data.token);
+  window.location.href = '/dashboard.html';
+} else {
+        const err = await res.json();
+        alert(err.message || 'Registration failed');
+      }
+    }
+  </script>
+</body>
+</html>
+
