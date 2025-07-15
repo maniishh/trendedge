@@ -16,6 +16,6 @@
 ## 🚀 How to Run
 
 ```bash
-git clone https://github.com/yourusername/yourrepo.git
+git clone https://github.com/maniishh/trendedge.git
 cd yourrepo
 npm install
