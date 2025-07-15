@@ -17,5 +17,5 @@
 
 ```bash
 git clone https://github.com/maniishh/trendedge.git
-cd yourrepo
+cd trendedge or yourrepo
 npm install
