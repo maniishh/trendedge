@@ -1,43 +1,229 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>TrendEdge - Home</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-</head>
-<body class="bg-gray-100 min-h-screen flex flex-col justify-between">
+ 
+<script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Header -->
-  <header class="bg-white text-black p-4 shadow-md">
-    <div class="max-w-7xl mx-auto flex justify-between items-center">
-      <h1 class="text-2xl font-bold">📈 TrendEdge</h1>
-      <nav class="space-x-4">
-        <a href="login.html" class="hover:underline">Login</a>
-        <a href="register.html" class="hover:underline">Register</a>
-      </nav>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    };
+  </script>
+
+ 
+  <style>
+    ::-webkit-scrollbar {
+      width: 12px;
+      height: 12px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(120deg, #1e3a8a, #1e40af);
+      border-radius: 9999px;
+      box-shadow: inset 2px 2px 5px rgba(30, 58, 138, 0.3), inset -2px -2px 5px rgba(255, 255, 255, 0.05);
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(120deg, #1e40af, #3b82f6);
+      box-shadow: 0 0 10px rgba(30, 64, 175, 0.4);
+    }
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: #1e40af transparent;
+    }
+    .dark ::-webkit-scrollbar-thumb {
+      background: linear-gradient(120deg, #1e3a8a, #1e40af);
+      box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 0.05), inset -2px -2px 5px rgba(0, 0, 0, 0.2);
+    }
+    .dark ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(120deg, #3b82f6, #60a5fa);
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+    }
+    .dark * {
+      scrollbar-color: #1e3a8a transparent;
+    }
+  </style>
+</head>
+
+<body id="bodyRoot" class="bg-gradient-to-br from-gray-100 to-blue-50 dark:from-gray-900 dark:to-gray-800 text-gray-800 dark:text-gray-100 min-h-screen flex flex-col">
+
+  <header class="bg-white dark:bg-gray-900 shadow-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <img src="/logo.png" alt="logo"class="w-7 h-7" />
+        <span class="text-xl font-semibold text-gray-900 dark:text-white">TrendEdge</span>
+      </div>
+
+     
+      <nav class="hidden md:flex items-center gap-4 text-sm md:text-base">
+  <a href="login.html" class="px-3 py-1 bg-red-800 hover:bg-red-900 text-white rounded transition">Login</a>
+  <a href="register.html" class="px-3 py-1 bg-green-800 hover:bg-green-900 text-white font-semibold rounded transition">Register</a>
+  <button id="darkToggle" class="text-xl text-white hover:text-yellow-400 transition" title="Toggle Dark Mode">
+    <span id="darkToggleIcon">🌙</span>
+  </button>
+</nav>
+
+
+      
+      <button id="menuToggle" class="md:hidden text-2xl focus:outline-none text-blue-900 dark:text-blue-300">
+        ☰
+      </button>
     </div>
+
+     
+   <div id="mobileMenu" class="md:hidden hidden px-6 pb-4 bg-white dark:bg-gray-900 space-y-2">
+  <a href="login.html" class="block text-center bg-gradient-to-b from-blue-500 to-blue-700 text-white py-1.5 px-4 text-sm rounded-lg shadow hover:brightness-110 transition transform active:translate-y-[1px]">
+    Login
+  </a>
+  <a href="register.html" class="block text-center bg-gradient-to-b from-gray-300 to-gray-500 text-gray-800 py-1.5 px-4 text-sm rounded-lg shadow hover:brightness-110 transition transform active:translate-y-[1px] dark:from-gray-700 dark:to-gray-600 dark:text-white">
+    Register
+  </a>
+  <button id="darkToggleMobile" class="w-full text-center bg-gradient-to-b from-yellow-400 to-yellow-500 text-gray-900 py-1.5 px-4 text-sm rounded-lg shadow hover:brightness-110 transition transform active:translate-y-[1px]">
+    <span id="darkToggleMobileIcon">🌙</span> Toggle Dark Mode
+  </button>
+</div>
+
+
   </header>
 
-  <!-- Main Content -->
-  <main class="flex-grow flex items-center justify-center px-4">
-    <div class="bg-white p-8 rounded-lg shadow-lg max-w-xl text-center">
-      <h2 class="text-3xl font-semibold text-gray-800 mb-4">Welcome to TrendEdge</h2>
-      <p class="text-gray-600 mb-6">
-        Track ETFs and stocks that are within 2% below or 5% above their 20-Day Moving Average (20-DMA).  
+  
+  <main class="flex-grow flex flex-col items-center justify-center px-4 py-16 space-y-16">
+    <div class="bg-white dark:bg-gray-800 shadow-xl rounded-3xl p-10 max-w-2xl w-full text-center space-y-6">
+      <h2 class="text-4xl font-bold">Welcome to <span class="text-blue-700 dark:text-blue-400">TrendEdge</span></h2>
+      <p class="text-lg leading-relaxed text-gray-600 dark:text-gray-300">
+        Track ETFs and stocks that are within <span class="text-blue-600 dark:text-blue-400 font-medium">2% below</span> or 
+        <span class="text-green-600 dark:text-green-400 font-medium">5% above</span> their 20-Day Moving Average (20-DMA).<br />
         Perfect for identifying low-risk buy/sell opportunities using technical signals.
       </p>
-      <div class="space-x-4">
-        <a href="login.html" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">Login</a>
-        <a href="register.html" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-5 py-2 rounded">Register</a>
+      <div class="flex justify-center gap-4">
+        <a href="login.html" class="bg-blue-700 hover:bg-blue-800 text-white px-6 py-2 rounded-xl font-medium transition">Login</a>
+        <a href="register.html" class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white px-6 py-2 rounded-xl font-medium transition">Register</a>
       </div>
+    </div>
+
+    <!-- Live Market Ticker -->
+    <div class="w-full max-w-3xl overflow-hidden rounded-xl shadow bg-gradient-to-r from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 mb-4">
+      <div id="marketTicker" class="whitespace-nowrap animate-marquee text-blue-900 dark:text-blue-200 font-semibold py-2 px-4 text-sm flex gap-8">
+        <span>NASDAQ: 15,200.45 ▲ +0.8%</span>
+        <span>S&P 500: 4,500.12 ▼ -0.3%</span>
+        <span>TSLA: $720.50 ▲ +1.2%</span>
+        <span>AAPL: $190.30 ▼ -0.5%</span>
+        <span>GOOGL: $2,800.10 ▲ +0.6%</span>
+        <span>AMZN: $3,400.00 ▲ +0.4%</span>
+        <span>BTC: $60,000 ▲ +2.1%</span>
+      </div>
+    </div>
+
+    <!-- Features Section -->
+    <section class="w-full max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-6 flex flex-col items-center">
+        <img src="https://img.icons8.com/ios-filled/50/1e3a8a/line-chart.png" alt="DMA Alerts" class="mb-3">
+        <h3 class="font-bold text-lg mb-2">DMA Alerts</h3>
+        <p class="text-gray-600 dark:text-gray-300">Get notified when stocks approach their 20-DMA for timely buy/sell signals.</p>
+      </div>
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-6 flex flex-col items-center">
+        <img src="https://img.icons8.com/ios-filled/50/1e3a8a/stock-share.png" alt="Watchlist" class="mb-3">
+        <h3 class="font-bold text-lg mb-2">Personal Watchlist</h3>
+        <p class="text-gray-600 dark:text-gray-300">Track your favorite stocks and ETFs in one place, updated in real-time.</p>
+      </div>
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-6 flex flex-col items-center">
+        <!-- Updated Insights SVG Icon -->
+        <svg class="mb-3" width="50" height="50" fill="none" viewBox="0 0 50 50">
+          <rect width="50" height="50" rx="12" fill="#EFF6FF" class="dark:fill-blue-900"/>
+          <path d="M16 34V24M25 34V16M34 34V28" stroke="#1e3a8a" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="16" cy="24" r="2.5" fill="#3b82f6"/>
+          <circle cx="25" cy="16" r="2.5" fill="#22d3ee"/>
+          <circle cx="34" cy="28" r="2.5" fill="#16a34a"/>
+          <rect x="12" y="36" width="26" height="3" rx="1.5" fill="#1e3a8a" fill-opacity=".15"/>
+        </svg>
+        <h3 class="font-bold text-lg mb-2">Actionable Insights</h3>
+        <p class="text-gray-600 dark:text-gray-300">Visualize trends and make informed decisions with easy-to-read analytics.</p>
+      </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="w-full max-w-4xl bg-gradient-to-r from-blue-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 rounded-2xl shadow p-8 mt-8">
+      <h3 class="text-2xl font-bold text-blue-800 dark:text-blue-300 mb-4 text-center">How It Works</h3>
+      <ol class="list-decimal list-inside text-gray-700 dark:text-gray-200 space-y-2 text-lg max-w-2xl mx-auto">
+        <li>Register and log in to your TrendEdge account.</li>
+        <li>Add stocks or ETFs to your personal watchlist.</li>
+        <li>Receive alerts when prices approach key technical levels.</li>
+        <li>Use insights to make smarter trading decisions.</li>
+      </ol>
+    </section>
+
+    <!-- Call to Action -->
+    <div class="w-full max-w-2xl mx-auto text-center mt-8">
+      <h4 class="text-xl font-semibold mb-2">Ready to get started?</h4>
+      <a href="register.html" class="inline-block bg-blue-700 hover:bg-blue-800 text-white px-8 py-3 rounded-xl font-bold text-lg shadow transition">Create Your Free Account</a>
     </div>
   </main>
 
-  <!-- Footer -->
-  <footer class="bg-gray-200 text-center text-sm text-gray-600 py-4">
+  <footer class="bg-gray-200 dark:bg-gray-900 text-center text-sm text-gray-600 dark:text-gray-400 py-6">
     &copy; 2025 TrendEdge. All rights reserved.
   </footer>
 
+  
+  <script>
+    const darkToggle = document.getElementById('darkToggle');
+    const darkToggleMobile = document.getElementById('darkToggleMobile');
+    const menuToggle = document.getElementById('menuToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const darkToggleIcon = document.getElementById('darkToggleIcon');
+    const darkToggleMobileIcon = document.getElementById('darkToggleMobileIcon');
+
+    function updateBodyBackground() {
+      const body = document.getElementById('bodyRoot');
+      if (document.documentElement.classList.contains('dark')) {
+        body.classList.remove('from-gray-100', 'to-blue-50');
+        body.classList.add('from-gray-900', 'to-gray-800');
+      } else {
+        body.classList.remove('from-gray-900', 'to-gray-800');
+        body.classList.add('from-gray-100', 'to-blue-50');
+      }
+    }
+    function updateToggleIcons() {
+      const isDark = document.documentElement.classList.contains('dark');
+      if (darkToggleIcon) darkToggleIcon.textContent = isDark ? '☀️' : '🌙';
+      if (darkToggleMobileIcon) darkToggleMobileIcon.textContent = isDark ? '☀️' : '🌙';
+      updateBodyBackground();
+    }
+
+    function toggleDarkMode() {
+      document.documentElement.classList.toggle('dark');
+      localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+      updateToggleIcons();
+    }
+
+    darkToggle?.addEventListener('click', toggleDarkMode);
+    darkToggleMobile?.addEventListener('click', toggleDarkMode);
+
+    menuToggle.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+    updateToggleIcons();
+  </script>
+
+  <style>
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .animate-marquee {
+      display: inline-block;
+      min-width: 200%;
+      animation: marquee 25s linear infinite;
+    }
+  </style>
 </body>
 </html>
