@@ -6,40 +6,192 @@
   <title>TrendEdge Dashboard</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+
+
+  <style>
+  body {
+    background: linear-gradient(135deg, #f8fafc, #e0f2fe);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+h1 {
+  font-family: 'Playfair Display', serif;
+}
+
+
+  .dashboard-box {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .dashboard-box:hover {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  input[type="text"] {
+    border-radius: 0.5rem;
+    border: 1px solid #cbd5e0;
+    transition: border 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  }
+
+  input[type="text"]:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+  }
+
+  button {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  #stockList li {
+    border-left: 4px solid #3b82f6;
+    background: white;
+    transition: background 0.3s, transform 0.2s;
+  }
+
+  #stockList li:hover {
+    background: #f0f9ff;
+    transform: translateX(4px);
+  }
+
+  canvas {
+    border-radius: 1rem;
+    border: 1px solid #e5e7eb;
+  }
+</style>
+
 </head>
-<body class="bg-gray-100 text-gray-800 p-6">
-  <div class="max-w-4xl mx-auto">
-    <h1 class="text-3xl font-bold mb-4">📊 TrendEdge Dashboard</h1>
-
-    <!-- Watchlist Input -->
-    <div class="mb-6">
-      <h2 class="text-xl font-semibold mb-2">Your Watchlist</h2>
-      <input id="watchlistInput" type="text" placeholder="e.g. AAPL,MSFT,GOOGL" class="border p-2 w-full mb-2">
-      <button onclick="saveWatchlist()" class="bg-blue-600 text-white px-4 py-2 rounded">Save Watchlist</button>
+<body class="bg-gradient-to-br from-blue-50 to-blue-200 min-h-screen text-gray-800 p-6">
+  <div class="max-w-5xl mx-auto">
+    <!-- Profile & Stats Row -->
+    <div class="flex flex-col md:flex-row items-center justify-between gap-6 mb-8">
+      <!-- Profile Card -->
+      <div class="flex items-center gap-4 bg-white/70 backdrop-blur-md rounded-2xl shadow p-4 w-full md:w-auto">
+        <label class="relative cursor-pointer group">
+          <img id="profileAvatar" src="https://api.dicebear.com/7.x/identicon/svg?seed=trendedge" alt="User Avatar" class="w-14 h-14 rounded-full border-2 border-blue-300 shadow object-cover">
+          <input id="avatarInput" type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" />
+          <span class="absolute bottom-0 right-0 bg-blue-600 text-white text-xs rounded-full px-1.5 py-0.5 opacity-80 group-hover:opacity-100 transition">✏️</span>
+        </label>
+        <div>
+          <div class="font-bold text-lg flex items-center gap-2" id="userNameSection">
+            <span id="userNameDisplay">Your Name</span>
+            <button id="editNameBtn" class="text-xs text-blue-600  hover:text-blue-800">✏️</button>
+          </div>
+          <div class="text-sm text-gray-600" id="userEmailDisplay">Welcome, Trader!</div>
+          <button onclick="logout()" class="mt-1 text-xs bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition">Logout</button>
+        </div>
+      </div>
+   
+      <div class="flex flex-wrap gap-4 justify-center">
+        <div class="bg-white/80 rounded-xl px-6 py-3 shadow text-center">
+          <div class="text-xs text-gray-500">Total Stocks</div>
+          <div id="statTotal" class="font-bold text-xl">0</div>
+        </div>
+        <div class="bg-green-100 rounded-xl px-6 py-3 shadow text-center">
+          <div class="text-xs text-green-700">Gainers</div>
+          <div id="statGainers" class="font-bold text-xl text-green-700">0</div>
+        </div>
+        <div class="bg-red-100 rounded-xl px-6 py-3 shadow text-center">
+          <div class="text-xs text-red-700">Losers</div>
+          <div id="statLosers" class="font-bold text-xl text-red-700">0</div>
+        </div>
+        <div class="bg-blue-100 rounded-xl px-6 py-3 shadow text-center">
+          <div class="text-xs text-blue-700">Watchlist</div>
+          <div id="statWatchlist" class="font-bold text-xl text-blue-700">0</div>
+        </div>
+      </div>
     </div>
+    <div id="notification" class="hidden mb-4 p-3 rounded-xl bg-yellow-100 text-yellow-800 font-medium shadow"></div>
 
-    <!-- Stock List -->
-    <div id="results" class="mt-6">
-      <h2 class="text-xl font-semibold mb-4">20-DMA Signals</h2>
-      <ul id="stockList" class="space-y-2"></ul>
+    <div class="flex gap-4 mb-6 text-sm font-medium">
+      <button onclick="showTab('dashboard', event)" class="tab-btn bg-blue-600 text-white px-4 py-2 rounded shadow transition">Dashboard</button>
+      <button onclick="showTab('topstocks', event)" class="tab-btn px-4 py-2 rounded hover:bg-blue-100 transition">Top Stocks</button>
+      <button onclick="showTab('news', event)" class="tab-btn px-4 py-2 rounded hover:bg-blue-100 transition">Market News</button>
+      <button onclick="fetchStocks();showNotification('Data refreshed!')" class="ml-auto bg-blue-200 hover:bg-blue-300 text-blue-900 px-4 py-2 rounded shadow transition">🔄 Refresh</button>
     </div>
-
-    <!-- Chart -->
-    <div class="mt-8">
-      <canvas id="stockChart" width="600" height="300" class="bg-white p-4 rounded shadow"></canvas>
+    <div id="dashboard" class="tab-content dashboard-box">
+      <div class="mb-6">
+        <h2 class="text-xl font-semibold mb-2">Your Watchlist</h2>
+        <input id="watchlistInput" type="text" placeholder="e.g. AAPL,MSFT,GOOGL" class="border p-2 w-full mb-2">
+        <button onclick="saveWatchlist()" class="bg-blue-600 text-white px-4 py-2 rounded">Save Watchlist</button>
+        <a href="/watchlist.html" class="text-blue-600 underline ml-4">View Watchlist</a>
+      </div>
+      <div id="results" class="mt-6">
+        <h2 class="text-xl font-semibold mb-4">20-DMA Signals</h2>
+        <ul id="stockList" class="space-y-2"></ul>
+        <div class="mt-8" id="chartContainer" style="display:none">
+          <div class="relative w-full max-w-full overflow-x-auto bg-white p-4 rounded shadow">
+            <canvas id="stockChart" class="w-full h-[300px]"></canvas>
+          </div>
+        </div>
+      </div>
     </div>
-
-    <div class="mt-6">
-      <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded">Logout</button>
+    <div id="topstocks" class="tab-content dashboard-box hidden">
+      <h2 class="text-xl font-semibold mb-4">🔥 Top Performing Stocks</h2>
+      <ul class="space-y-2">
+        <li class="dashboard-box">NVDA: +4.2% today</li>
+        <li class="dashboard-box">AAPL: +3.8% today</li>
+        <li class="dashboard-box">TSLA: +3.1% today</li>
+        <li class="dashboard-box">META: +2.6% today</li>
+      </ul>
+    </div>
+    <div id="news" class="tab-content dashboard-box hidden mt-6">
+      <h2 class="text-xl font-semibold mb-4">📰 Market News</h2>
+      <div class="space-y-4">
+        <div class="dashboard-box">
+          <h3 class="font-semibold">Fed Holds Rates Steady</h3>
+          <p class="text-sm text-gray-600">The Federal Reserve kept interest rates unchanged amid inflation concerns.</p>
+        </div>
+        <div class="dashboard-box">
+          <h3 class="font-semibold">Apple Launches New AI Chips</h3>
+          <p class="text-sm text-gray-600">Apple unveiled a new line of AI chips to power its next-gen MacBooks.</p>
+        </div>
+      </div>
+    </div>
+    <div class="mt-6 text-center text-gray-500 text-xs">
+      &copy; 2025 TrendEdge. All rights reserved.
+    </div>
+    <!-- Chatbox Floating Button & Panel -->
+    <div id="chatboxContainer" class="fixed bottom-6 right-6 z-50">
+      <button id="openChatBtn" class="bg-blue-600 text-white rounded-full shadow-lg w-14 h-14 flex items-center justify-center text-2xl hover:bg-blue-700 focus:outline-none">💬</button>
+      <div id="chatPanel" class="hidden bg-white rounded-xl shadow-xl w-80 max-w-xs p-4 flex flex-col gap-2 mt-2">
+        <div class="flex justify-between items-center mb-2">
+          <span class="font-bold text-blue-700">Chat Support</span>
+          <button id="closeChatBtn" class="text-gray-400 hover:text-red-500 text-lg">&times;</button>
+        </div>
+        <div id="chatMessages" class="flex-1 overflow-y-auto max-h-60 mb-2 space-y-2 text-sm"></div>
+        <form id="chatForm" class="flex gap-2">
+          <input id="chatInput" type="text" placeholder="Type a message..." class="flex-1 border rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-300" autocomplete="off" />
+          <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Send</button>
+        </form>
+      </div>
     </div>
   </div>
 
   <script>
-    const token = localStorage.getItem('token');
+     const token = localStorage.getItem('token');
 
     if (!token) {
       alert('Unauthorized. Redirecting to login.');
       window.location.href = '/login.html';
+    }
+
+    function showNotification(msg) {
+      const n = document.getElementById('notification');
+      n.textContent = msg;
+      n.classList.remove('hidden');
+      setTimeout(() => n.classList.add('hidden'), 2000);
     }
 
     async function fetchStocks() {
@@ -58,29 +210,52 @@
         li.textContent = `${stock.symbol}: $${stock.current.toFixed(2)} | 20DMA: $${stock.dma20.toFixed(2)} | ${stock.percent}% → ${stock.status}`;
         list.appendChild(li);
       });
-
-      renderChart(data);
+      document.getElementById('statTotal').textContent = data.length;
+      document.getElementById('statGainers').textContent = data.filter(s => s.percent > 0).length;
+      document.getElementById('statLosers').textContent = data.filter(s => s.percent < 0).length;
+      document.getElementById('statWatchlist').textContent = data.length;
+      const chartContainer = document.getElementById('chartContainer');
+      if (data.length > 0) {
+        chartContainer.style.display = '';
+        renderChart(data);
+      } else {
+        chartContainer.style.display = 'none';
+      }
     }
 
     async function saveWatchlist() {
       const input = document.getElementById('watchlistInput').value.trim();
       if (!input) return alert('Enter symbols');
+      const newSymbols = input.split(',').map(s => s.trim().toUpperCase()).filter(Boolean);
 
-      const symbols = input.split(',').map(s => s.trim().toUpperCase());
+      let currentSymbols = [];
+      try {
+        const res = await fetch('/api/stocks', { headers: { Authorization: token } });
+        if (res.ok) {
+          const data = await res.json();
+          currentSymbols = data.map(s => s.symbol.toUpperCase());
+        }
+      } catch {}
+
+      const merged = Array.from(new Set([...currentSymbols, ...newSymbols, 'YOURSELF'])).filter(Boolean);
+      if (merged.length === 0) {
+        alert('Watchlist cannot be empty!');
+        return;
+      }
       const res = await fetch('/api/stocks/watchlist', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: token
         },
-        body: JSON.stringify({ symbols })
+        body: JSON.stringify({ symbols: merged })
       });
-
       if (res.ok) {
-        alert('Watchlist saved');
+        alert('Watchlist updated');
         fetchStocks();
+        document.getElementById('watchlistInput').value = '';
       } else {
-        alert('Failed to save watchlist');
+        alert('Failed to update watchlist');
       }
     }
 
@@ -94,7 +269,6 @@
       const labels = data.map(s => s.symbol);
       const currentPrices = data.map(s => s.current);
       const dma20 = data.map(s => s.dma20);
-
       const ctx = document.getElementById('stockChart').getContext('2d');
       if (chart) chart.destroy();
       chart = new Chart(ctx, {
@@ -105,23 +279,201 @@
             {
               label: 'Current Price',
               data: currentPrices,
-              backgroundColor: 'rgba(59,130,246,0.5)',
+              backgroundColor: 'rgba(59,130,246,0.7)',
             },
             {
               label: '20-DMA',
               data: dma20,
-              backgroundColor: 'rgba(34,197,94,0.5)',
+              backgroundColor: 'rgba(34,197,94,0.7)',
             },
           ]
         },
         options: {
           responsive: true,
+          plugins: {
+            legend: { position: 'top' },
+            title: { display: true, text: 'Stock Price vs 20-DMA' }
+          },
           scales: { y: { beginAtZero: false } }
         }
       });
     }
+    function showTab(tabId, event) {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+      document.getElementById(tabId).classList.remove('hidden');
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('bg-blue-600', 'text-white'));
+      if(event) event.target.classList.add('bg-blue-600', 'text-white');
+    }
 
     fetchStocks();
+
+    
+    async function fetchTopStocks() {
+      const topSymbols = ['NVDA','AAPL','TSLA','META','MSFT','GOOGL','AMZN','NFLX','BABA','JPM'];
+      try {
+        const res = await fetch(`/api/stocks/market?symbols=${topSymbols.join(',')}`, {
+          headers: { Authorization: token }
+        });
+        if (!res.ok) throw new Error('Failed to fetch top stocks');
+        const data = await res.json();
+        data.sort((a, b) => parseFloat(b.percent) - parseFloat(a.percent));
+        const ul = document.querySelector('#topstocks ul');
+        ul.innerHTML = '';
+        data.slice(0, 5).forEach(stock => {
+          const li = document.createElement('li');
+          li.className = 'dashboard-box flex justify-between items-center';
+          li.innerHTML = `
+            <span class="font-bold text-blue-700">${stock.symbol}</span>
+            <span class="text-green-700 font-semibold">${stock.percent > 0 ? '+' : ''}${stock.percent}%</span>
+            <span class="text-gray-600 text-sm">$${stock.current.toFixed(2)}</span>
+          `;
+          ul.appendChild(li);
+        });
+      } catch (err) {
+        const ul = document.querySelector('#topstocks ul');
+        ul.innerHTML = '<li class="text-gray-500">Unable to load top stocks.</li>';
+      }
+    }
+  
+    setInterval(fetchTopStocks, 60000);
+    fetchTopStocks();
+    async function fetchMarketNews() {
+      const newsList = [
+        {
+          title: 'Fed Holds Rates Steady',
+          desc: 'The Federal Reserve kept interest rates unchanged amid inflation concerns.'
+        },
+        {
+          title: 'Apple Launches New AI Chips',
+          desc: 'Apple unveiled a new line of AI chips to power its next-gen MacBooks.'
+        },
+        {
+          title: 'Tesla Hits New High',
+          desc: 'Tesla shares surge after record quarterly deliveries.'
+        },
+        {
+          title: 'Amazon Expands Healthcare',
+          desc: 'Amazon announces new healthcare services for Prime members.'
+        },
+        {
+          title: 'Microsoft Invests in Quantum',
+          desc: 'Microsoft increases investment in quantum computing research.'
+        }
+      ];
+      // Shuffle and pick 2-3 news items
+      const shuffled = newsList.sort(() => 0.5 - Math.random());
+      const newsToShow = shuffled.slice(0, 2 + Math.floor(Math.random()*2));
+      const newsDiv = document.querySelector('#news .space-y-4');
+      newsDiv.innerHTML = '';
+      newsToShow.forEach(news => {
+        const box = document.createElement('div');
+        box.className = 'dashboard-box';
+        box.innerHTML = `<h3 class="font-semibold">${news.title}</h3><p class="text-sm text-gray-600">${news.desc}</p>`;
+        newsDiv.appendChild(box);
+      });
+    }
+    // Update every 60 seconds
+    setInterval(fetchMarketNews, 60000);
+    // Initial load
+    fetchMarketNews();
+
+    // Profile image upload & preview
+    const avatarInput = document.getElementById('avatarInput');
+    const profileAvatar = document.getElementById('profileAvatar');
+    // Load from localStorage if exists
+    const savedAvatar = localStorage.getItem('profileAvatar');
+    if (savedAvatar) profileAvatar.src = savedAvatar;
+    avatarInput?.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        profileAvatar.src = evt.target.result;
+        localStorage.setItem('profileAvatar', evt.target.result);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Show user name and email in profile
+    const userEmail = localStorage.getItem('userEmail');
+    if (userEmail) {
+      document.getElementById('userEmailDisplay').textContent = userEmail;
+    }
+    const userName = localStorage.getItem('userName') || 'Your Name';
+    document.getElementById('userNameDisplay').textContent = userName;
+
+    // Edit name logic
+    document.getElementById('editNameBtn').onclick = function() {
+      const currentName = localStorage.getItem('userName') || 'Your Name';
+      const newName = prompt('Enter your name:', currentName);
+      if (newName && newName.trim()) {
+        localStorage.setItem('userName', newName.trim());
+        document.getElementById('userNameDisplay').textContent = newName.trim();
+      }
+    };
+
+  // --- Chatbox Logic ---
+  const chatboxContainer = document.getElementById('chatboxContainer');
+  const openChatBtn = document.getElementById('openChatBtn');
+  const closeChatBtn = document.getElementById('closeChatBtn');
+  const chatPanel = document.getElementById('chatPanel');
+  const chatForm = document.getElementById('chatForm');
+  const chatInput = document.getElementById('chatInput');
+  const chatMessages = document.getElementById('chatMessages');
+
+  openChatBtn.onclick = () => {
+    chatPanel.classList.remove('hidden');
+    openChatBtn.classList.add('hidden');
+    chatInput.focus();
+  };
+  closeChatBtn.onclick = () => {
+    chatPanel.classList.add('hidden');
+    openChatBtn.classList.remove('hidden');
+  };
+
+  function addChatMessage(sender, text, align) {
+    const div = document.createElement('div');
+    div.className = `flex ${align === 'right' ? 'justify-end' : 'justify-start'}`;
+    div.innerHTML = `<div class="rounded-lg px-3 py-2 ${align === 'right' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'} max-w-[70%]">${text}</div>`;
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  chatForm.onsubmit = async function(e) {
+    e.preventDefault();
+    const msg = chatInput.value.trim();
+    if (!msg) return;
+    addChatMessage('You', msg, 'right');
+    chatInput.value = '';
+    // Show typing indicator
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'flex justify-start';
+    typingDiv.id = 'typingIndicator';
+    typingDiv.innerHTML = `<div class="rounded-lg px-3 py-2 bg-gray-200 text-gray-500 max-w-[70%] italic">AI is typing...</div>`;
+    chatMessages.appendChild(typingDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    try {
+      const res = await fetch('/api/chat/ai', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: token
+        },
+        body: JSON.stringify({ message: msg })
+      });
+      let aiReply = 'Sorry, AI is unavailable.';
+      if (res.ok) {
+        const data = await res.json();
+        aiReply = data.reply || aiReply;
+      }
+      document.getElementById('typingIndicator')?.remove();
+      addChatMessage('AI', aiReply, 'left');
+    } catch (err) {
+      document.getElementById('typingIndicator')?.remove();
+      addChatMessage('AI', 'Sorry, there was a problem connecting to the AI.', 'left');
+    }
+  };
   </script>
 </body>
+
 </html>
