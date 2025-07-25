@@ -21,9 +21,7 @@ console.log("🔍 MONGO_URI from env:", process.env.MONGO_URI);
 
 mongoose.connect(process.env.MONGO_URI);
  
-app.use(express.static(path.join(__dirname, '../public')));
-
- 
+// Mount API routes
 app.use('/api', authRoutes);
 app.use('/api/stocks', stockRoutes);
 
