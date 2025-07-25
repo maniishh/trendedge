@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Watchlist - TrendEdge</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-800 p-6">
+  <div class="max-w-3xl mx-auto">
+    <h1 class="text-3xl font-bold text-blue-700 mb-6 text-center">📋 Your Saved Watchlist</h1>
+
+    <!-- Watchlist display -->
+    <ul id="watchlistDisplay" class="space-y-4 mb-8"></ul>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      alert('Unauthorized. Redirecting to login.');
+      window.location.href = '/login.html';
+    }
+
+    // Load and show live prices
+    async function loadWatchlist() {
+      try {
+        const res = await fetch('/api/stocks', {
+          headers: { Authorization: token }
+        });
+        if (!res.ok) throw new Error('Failed to fetch');
+
+        const data = await res.json();
+        const ul = document.getElementById('watchlistDisplay');
+        ul.innerHTML = '';
+
+        if (data.length === 0) {
+          ul.innerHTML = `<li class="text-gray-500 text-center">Your watchlist is empty.</li>`;
+          return;
+        }
+
+        data.forEach(stock => {
+          const li = document.createElement('li');
+          li.className = 'flex items-center justify-between bg-white rounded-xl p-5 shadow border-l-8 border-blue-500 hover:shadow-lg transition group';
+          li.innerHTML = `
+            <div>
+              <div class="flex items-center gap-3 mb-1">
+                <span class="text-2xl font-bold text-blue-700 tracking-wide">${stock.symbol}</span>
+                <span class="text-green-600 font-semibold text-lg">$${stock.current.toFixed(2)}</span>
+              </div>
+              <div class="text-sm text-gray-500">20-DMA: $${stock.dma20.toFixed(2)} | Change: ${stock.percent}% → <span class="font-semibold ${stock.status === 'Buy' ? 'text-green-700' : stock.status === 'Sell' ? 'text-red-600' : 'text-gray-700'}">${stock.status}</span></div>
+            </div>
+            <button onclick="removeFromWatchlist('${stock.symbol}')" class="ml-4 bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow transition group-hover:scale-105">Remove</button>
+          `;
+          ul.appendChild(li);
+        });
+      } catch (err) {
+        alert('Failed to load your watchlist.');
+      }
+    }
+
+    // Remove a single stock from the watchlist
+    async function removeFromWatchlist(symbol) {
+      if (!confirm(`Remove ${symbol} from your watchlist?`)) return;
+      try {
+        // Fetch current watchlist
+        const res = await fetch('/api/stocks', { headers: { Authorization: token } });
+        if (!res.ok) throw new Error('Failed to fetch');
+        const data = await res.json();
+        const newSymbols = data.map(s => s.symbol).filter(s => s !== symbol);
+        // Update watchlist
+        const updateRes = await fetch('/api/stocks/watchlist', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: token
+          },
+          body: JSON.stringify({ symbols: newSymbols })
+        });
+        if (updateRes.ok) {
+          loadWatchlist();
+        } else {
+          alert('Failed to remove from watchlist.');
+        }
+      } catch (err) {
+        alert('Server error.');
+      }
+    }
+
+    loadWatchlist();
+  </script>
+</body>
+</html>
+
