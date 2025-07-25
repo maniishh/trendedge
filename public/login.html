@@ -92,7 +92,7 @@
     #message {
       margin-top: 10px;
       text-align: center;
-      color: red;
+      color: green;
     }
   </style>
 </head>
@@ -126,10 +126,13 @@
 
       if (res.ok && data.token) {
         localStorage.setItem('token', data.token);
-        window.location.href = '/dashboard.html'; // or your dashboard page
+        localStorage.setItem('userEmail', email);
+        window.location.href = '/dashboard.html'; 
       }
     });
   </script>
 </body>
 </html>
+
+
 
